@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kento Obfuscator - Lua難読化</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Kento <span>Obfuscator</span></h1>
+        <p class="tagline">🔒 Luaコードを難読化して保護</p>
+    </header>
+
+    <div class="features">
+        <div class="feature">
+            <span class="icon">🛡️</span>
+            <span>コード保護</span>
+        </div>
+        <div class="feature">
+            <span class="icon">🚀</span>
+            <span>完全無料</span>
+        </div>
+        <div class="feature">
+            <span class="icon">🔐</span>
+            <span>サーバー保存なし</span>
+        </div>
+    </div>
+
+    <div class="input-section">
+        <div class="input-group">
+            <textarea id="codeInput" placeholder="Luaコードを貼り付けてください...">-- Kento Hub スクリプト
+local player = game.Players.LocalPlayer
+print("Hello " .. player.Name)</textarea>
+        </div>
+
+        <div class="btn-group">
+            <button onclick="obfuscate()">🌀 難読化</button>
+            <button onclick="clearAll()" class="btn-secondary">🗑️ クリア</button>
+        </div>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div id="resultBox" class="result-box">
+        <div class="result-header">✅ 難読化完了！</div>
+        <div class="result-output" id="resultOutput"></div>
+        <div class="result-actions">
+            <button onclick="copyResult()">📋 コピー</button>
+            <button onclick="clearResult()" class="btn-secondary">✖ 閉じる</button>
+        </div>
+    </div>
+
+    <footer>
+        🔥 Kento Obfuscator · 完全無料 · コードは保存されません
+    </footer>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
