@@ -24,65 +24,66 @@ app.post('/obfuscate', (req, res) => {
 
 function obfuscateLua(code) {
     let result = code;
-    
+
     // 1. コメント削除（-- から行末まで）
     result = result.replace(/--.*$/gm, '');
-    
+
     // 2. 連続した空白を1つに
     result = result.replace(/\s+/g, ' ');
-    
+
     // 3. 変数名を短縮（RobloxのAPIは保護！）
     const varMap = {};
     let counter = 0;
-    
-    // ⚠️ 絶対に変えてはいけないキーワード（RobloxのAPI）
+
+    // ⚠️ 絶対に変えてはいけないキーワード（RobloxのAPI + Luaキーワード）
     const protectedKeywords = [
+        // Roblox API
         'game', 'workspace', 'Players', 'LocalPlayer', 'PlayerGui',
-        'ReplicatedStorage', 'ServerStorage', 'RunService', 'UserInputService',
-        'HttpService', 'TweenService', 'Debris', 'CollectionService',
+        'ReplicatedStorage', 'ServerStorage', 'ServerScriptService',
+        'RunService', 'UserInputService', 'HttpService', 'TweenService',
+        'Debris', 'CollectionService', 'MarketplaceService', 'DataStoreService',
+        'SoundService', 'Lighting', 'Camera', 'StarterGui', 'StarterPack',
+        'Teams', 'Chat', 'Players', 'ReplicatedFirst',
         'print', 'wait', 'spawn', 'task', 'coroutine', 'pcall', 'xpcall',
         'Vector3', 'CFrame', 'Color3', 'UDim2', 'Instance', 'Enum',
+        'script', 'parent', 'Children', 'Name', 'ClassName',
+        // Lua標準
         'string', 'table', 'math', 'os', 'debug', 'type', 'typeof',
         'self', 'super', 'getfenv', 'setfenv', 'require',
         'pairs', 'ipairs', 'next', 'select', 'unpack',
         'tonumber', 'tostring', 'rawget', 'rawset',
-        'getmetatable', 'setmetatable', 'rawequal'
-    ];
-    
-    // Luaのキーワードも保護
-    const luaKeywords = [
+        'getmetatable', 'setmetatable', 'rawequal',
+        // Luaキーワード
         'local', 'function', 'if', 'then', 'else', 'elseif', 'end',
         'for', 'do', 'while', 'repeat', 'until', 'return', 'break',
         'nil', 'true', 'false', 'and', 'or', 'not', 'in'
     ];
-    
-    const allProtected = protectedKeywords.concat(luaKeywords);
-    
+
     result = result.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (match) => {
         // 保護リストに含まれている場合はそのまま
-        if (allProtected.includes(match)) return match;
+        if (protectedKeywords.includes(match)) return match;
         // 数字だけの場合はそのまま
         if (/^\d+$/.test(match)) return match;
         // 短い変数名はそのまま（_a みたいなやつ）
         if (match.startsWith('_') && match.length <= 3) return match;
         // すでに短縮された変数はそのまま
         if (match.match(/^_[a-zA-Z0-9]$/)) return match;
-        
+
         if (!varMap[match]) {
-            // 変数名を短くする（最大2文字）
+            // 変数名を短くする（1〜2文字）
             const short = '_' + counter.toString(36);
             varMap[match] = short;
             counter++;
         }
         return varMap[match];
     });
-    
+
     // 4. 文字列はそのまま（Robloxが正しく解釈できるように）
     // 文字列のエスケープはしない！
-    
+
     // 5. 余分な空白を削除
     result = result.replace(/\s+/g, ' ');
-    
+
     return result.trim();
 }
 
